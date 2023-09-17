@@ -30,6 +30,7 @@ public class Block {
         private int nonce;
         private String estadoBloque;
         public Miner minadoPor;
+        private int chainWork;
         
         
         /**
@@ -37,12 +38,13 @@ public class Block {
         * 
         */
         
-	public Block() {
-		this.previousHash = "0";
-                this.estadoBloque="minando";
-		this.timeStamp = new Date().getTime();
+        public Block() {
+            this.previousHash = "0";
+            this.estadoBloque="minando";
+            this.timeStamp = new Date().getTime();
+            this.chainWork=0;
 
-	}
+        }
         /**
         * Block Constructor para crear un bloque nuevo en la blockchain.  
         * 
@@ -53,50 +55,55 @@ public class Block {
             previousHash=lastBlock.getHash();
             this.estadoBloque="minando";
             id=lastBlock.getId()+1;
+            this.chainWork=lastBlock.getChainWork();
         }
         
         /**
         * Calcula el Hash del bloque
         * @return String calculatedhash
         */
-	public String calculateHash() {
-		String calculatedhash = StringUtil.applySha256(getPreviousHash() +
-				Long.toString(getTimeStamp()) +
-				Integer.toString(getNonce()) + 
-				getMerkleRoot()
-				);
-		return calculatedhash;
-	}
-        
-        /**
-        * Añade una transaccion al bloque, retorna boolean si fue posible realizar la transaccion
-        * @return boolean
-        */
-	public boolean addTransaction(Transaction transaction) {
-		//process transaction and check if valid, unless block is genesis block then ignore.
-		if(transaction == null) return false;		
-		if((!"0".equals(previousHash))) {
-			if((transaction.processTransaction() != true)) {
-				System.out.println("Transaction failed to process. Discarded.");
-				return false;
-			}
-		}
+        public String calculateHash() {
+            String calculatedhash = StringUtil.applySha256(getPreviousHash() +
+                    Long.toString(getTimeStamp()) +
+                    Integer.toString(getNonce()) + 
+                    getMerkleRoot()
+                    );
+            return calculatedhash;
+        }
+            
+            /**
+            * Añade una transaccion al bloque, retorna boolean si fue posible realizar la transaccion
+            * @return boolean
+            */
+        public boolean addTransaction(Transaction transaction) {
+            //process transaction and check if valid, unless block is genesis block then ignore.
+            if(transaction == null) return false;		
+            if((!"0".equals(previousHash))) {
+                if((transaction.processTransaction() != true)) {
+                    System.out.println("Transaction failed to process. Discarded.");
+                    return false;
+                }
+            }
 
-		getTransactions().add(transaction);
-		System.out.println("Transaction Successfully added to Block");
-		return true;
-	}
+            getTransactions().add(transaction);
+            System.out.println("Transaction Successfully added to Block");
+            return true;
+        }
         
-//	public void mineBlock(int difficulty) {
-//		setMerkleRoot(StringUtil.getMerkleRoot(getTransactions()));
-//		String target = StringUtil.getDificultyString(difficulty); //Create a string with difficulty * "0" 
-//		while(!hash.substring( 0, difficulty).equals(target)) {
-//			this.nonce ++;
-//                        this.setHash(calculateHash());
-//		}
-//            
-//		System.out.println("Block Mined!!! : " + getHash());
-//	}
+        public int setChainWork(){
+            this.chainWork=this.getChainWork()+ this.minadoPor.getHashRate()*this.getFoundInTime();
+        }
+            
+    //	public void mineBlock(int difficulty) {
+    //		setMerkleRoot(StringUtil.getMerkleRoot(getTransactions()));
+    //		String target = StringUtil.getDificultyString(difficulty); //Create a string with difficulty * "0" 
+    //		while(!hash.substring( 0, difficulty).equals(target)) {
+    //			this.nonce ++;
+    //                        this.setHash(calculateHash());
+    //		}
+    //            
+    //		System.out.println("Block Mined!!! : " + getHash());
+    //	}
 
         /**
          * @return the id
@@ -223,4 +230,11 @@ public class Block {
         public int getFoundInTime() {
             return foundInTime;
         }
+
+    /**
+     * @return the chainWork
+     */
+    public int getChainWork() {
+        return chainWork;
+    }
 }
