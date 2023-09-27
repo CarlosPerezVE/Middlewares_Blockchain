@@ -12,6 +12,11 @@ public class IP {
 	private String IP;
 	private int port = 8333;
 	
+	IP(String IP, int port) {
+		this.IP = IP;
+		this.port = port;
+	}
+	
 	IP(String IP) {
 		this.IP = IP;
 	}
