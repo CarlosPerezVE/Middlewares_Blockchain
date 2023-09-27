@@ -38,8 +38,8 @@ public class Block implements Comparable<Block>{
         * 
         */
         
-        public Block() {
-            this.previousHash = "0";
+        public Block(String previousHash) {
+            this.previousHash = previousHash;
             this.estadoBloque="minando";
             this.timeStamp = new Date().getTime();
             this.chainWork=0;
@@ -94,16 +94,16 @@ public class Block implements Comparable<Block>{
             this.chainWork=this.getChainWork()+ this.minadoPor.getHashRate()*this.getFoundInTime();
         }
             
-    //	public void mineBlock(int difficulty) {
-    //		setMerkleRoot(StringUtil.getMerkleRoot(getTransactions()));
-    //		String target = StringUtil.getDificultyString(difficulty); //Create a string with difficulty * "0" 
-    //		while(!hash.substring( 0, difficulty).equals(target)) {
-    //			this.nonce ++;
-    //                        this.setHash(calculateHash());
-    //		}
-    //            
-    //		System.out.println("Block Mined!!! : " + getHash());
-    //	}
+    	public void mineBlock(int difficulty) {
+    		setMerkleRoot(StringUtil.getMerkleRoot(getTransactions()));
+    		String target = StringUtil.getDificultyString(difficulty); //Create a string with difficulty * "0" 
+    		while(!hash.substring( 0, difficulty).equals(target)) {
+    			this.nonce ++;
+                           this.setHash(calculateHash());
+    		}
+               
+    		System.out.println("Block Mined!!! : " + getHash());
+    	}
 
         /**
          * @return the id
