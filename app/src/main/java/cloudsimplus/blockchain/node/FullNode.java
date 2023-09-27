@@ -18,13 +18,22 @@ public class FullNode extends Node {
 	private final int numberOfBlockForCalc = 146;
 	
 	/**
-	 * CW-144
+	 * Naive approach
+	 * Number of zeros
 	 */
-	private void calculateDifficult() {
-		Block oldMedian = getMedian();
-		Block newMedian = getMedian(true);
-		int timestamp = newMedian.getFoundInTime() - oldMedian.getFoundInTime();
-		int chainWork = newMedian.getChainWork() - oldMedian.getChainWork();
+	public void calculateNewDifficult() {
+		float avgTime = averageTimeBlockMined();
+		int expectedTime = 60*10; // seg = 60 * 10 min
+		int diff = getDifficult();
+		
+		if (avgTime > expectedTime) {
+			diff--;
+		}
+		else {
+			diff++;
+		}
+		
+		setDifficult(diff);
 	}
 	
 	/**
@@ -38,6 +47,25 @@ public class FullNode extends Node {
 			time += blockChain.getBlockTime(i);
 		}
 		return time / numberOfBlockForCalc;
+	}
+	
+	/**
+	 * CW-144 of Bitcoin Cash
+	 */
+	/*
+	private void calculateDifficult() {
+		Block oldMedian = getMedian();
+		Block newMedian = getMedian(true);
+		int timestamp = newMedian.getFoundInTime() - oldMedian.getFoundInTime();
+		int chainWork = newMedian.getChainWork() - oldMedian.getChainWork();
+		
+		// estimation: timestamp
+		if (timestamp<72*600) {
+			timestamp = 72*600;
+		}
+		else if (timestamp > 288*600) {
+			timestamp = 288*600;
+		}
 	}
 	
 	public Block getMedian() {
@@ -56,5 +84,5 @@ public class FullNode extends Node {
 		}
 		chain.sortByFoundInTime();
 		return chain.getBlock(1);
-	}
+	}*/
 }
